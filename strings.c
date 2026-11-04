@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "strings.h"
 // manipuler pointeur via const, ce qui a l interieur ne vas pas etre modifier
 // '/0' = char NULL donc tant qu'on rencontre pas l'octet null on continue sinon on return
@@ -155,46 +156,107 @@ void str_join(char* dest, char parts[][256], int nb_parts, const char* sep) {
 
 }
 
+char* str_dup(const char* src) {
+    int len = str_len(src);
+    char* dup = malloc((len + 1) * sizeof(char));
+
+    if (dup == NULL)
+    {
+        return NULL;
+    }
+    
+    for(int i = 0; i < len ; i++) {
+        dup[i] = src[i];
+    }
+    dup[len] = '\0';
+    return dup;
+}
+
+
+char* str_concat_new(const char* a, const char* b) {
+    int i = 0;
+    int j = 0;
+    int len_a = (str_len(a));
+    int len_b = (str_len(b));
+    char* dest = malloc((len_a + len_b + 1) * sizeof(char));
+
+    if (dest == NULL)
+    {
+        return NULL;
+    }
+
+    while (a[i] != '\0') {
+        dest[i] = a[i];
+        i++;
+    }
+
+    while (b[j] != '\0') {
+        dest[i + j] = b[j];
+        j++;
+    }
+    dest[i + j] = '\0';
+    return dest;
+}
 
 
 
+char* str_sub(const char* src, int start, int length) {
+    int i = start;
+    int j = 0;
+    char* dest = malloc((length + 1) * sizeof(char));
+
+    if (dest == NULL)
+    {
+        return NULL;
+    }
+
+    while (src[i] != '\0' && j != length) {
+        dest[j] = src[i];
+
+        i++;
+        j++;
+    }
+    dest[j] = '\0';
+    return dest;
+}
 
 
 
+char* str_repeat(const char* src, int n) {
+    int i = 0;
+    int j = 0;
+    int count = 0;
 
+    if (n == 0)
+    {
+        return "";
+    }
+    if (n < 0)
+    {
+        return NULL;
+    }
+    
+    int len = str_len(src) * n;
+    char* dest = malloc((len + 1) * sizeof(char));
+    if (dest == NULL)
+    {
+        return NULL;
+    }
 
-int main(void) {
+    while (count != n)
+    {
+        while (src[i] != '\0') 
+        {
+            dest[j] = src[i];
 
-char* word = "coucou";
-int nb_char = str_len(word);
-printf("%s : %d\n", word, nb_char);
-char* word2 = "cotcot";
-printf("Egaux : %d\n", str_equals(word, word2));
-printf("Egaux : %d\n", str_equals(word, word));
+            i++;
+            j++;
+        }
+        i = 0;
+        count++;
+    }
+    
+    dest[j] = '\0';
 
-char dest[256];
-str_concat(dest, "bon", "jour");
-printf("%s\n", dest);
-
-printf("Contain : %d\n", str_contains("bonjour", "jour"));
-printf("Nombre de caract : %d\n", str_count_chars(word, 'o'));
-
-
-str_replace(dest, word, 'u', 't');
-printf("Résultat : %s\n", dest);
-
-const char* s = "banane,pomme,fraise";
-char parts[3][256];
-
-int count = str_split(s, ',', parts, 3);
-printf("%d\n", count);
-
-print_split(parts, count);
-
-char join_parts[3][256] = {"poire", "cerise", "abricot"};
-char join_dest[100];
-str_join(join_dest, join_parts, 3, ", ");
-printf("%s\n", join_dest);
-
-return 0;
+    return dest;
 }

@@ -1,5 +1,5 @@
-#ifndef OUTILS_H 
-#define OUTILS_H 
+#ifndef STRINGS_H 
+#define STRINGS_H 
 
 int str_len(const char* word);
 void print_str(const char* word);
@@ -11,5 +11,9 @@ void str_replace(char* dest, const char* src, char from, char to);
 int str_split(const char* s, char sep, char parts[][256], int max_parts);
 void print_split(const char parts[][256], int nb_parts);
 void str_join(char* dest, char parts[][256], int nb_parts, const char* sep);
+char* str_dup(const char* src);
+char* str_concat_new(const char* a, const char* b);
+char* str_sub(const char* src, int start, int length);
+char* str_repeat(const char* src, int n);
 
 #endif
