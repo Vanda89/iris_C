@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "list.h"
 #include "strings.h"
+#include "recursion.h"
+#include "dom.h"
 
 int main(void) {
 
@@ -108,6 +110,120 @@ list_add(new_list, 80);
 list_print(new_list);
 
 list_free(new_list);
+
+printf("---------------------------- \n");
+print_binary(13);
+printf("\n");
+print_binary(25);
+printf("\n");
+print_binary(42);
+printf("\n");
+
+printf("---------------------------- \n");
+Element* html = create_element("html", NULL, NULL);
+Element* body = create_element("body", NULL, NULL);
+Element* h1 = create_element("h1", "titre", "Mon titre");
+Element* div = create_element("div", "contenu", NULL);
+Element* p1 = create_element("p", NULL, "Bonjour");
+Element* p2 = create_element("p", NULL, "Au revoir");
+
+
+append_child(html, body);
+append_child(body, h1);
+append_child(body, div);
+append_child(div, p1);
+append_child(div, p2);
+
+
+if (html != NULL) {
+    printf("Tag : %s\n", html->tag);
+    printf("Id : %s\n", html->id);
+    printf("Nombre d'enfants : %d\n", html->nb_children);
+}
+if (body != NULL) {
+    printf("Tag : %s\n", body->tag);
+    printf("Id : %s\n", body->id);
+    printf("Nombre d'enfants : %d\n", body->nb_children);
+}
+if (h1 != NULL) {
+    printf("Tag : %s\n", h1->tag);
+    printf("Id : %s\n", h1->id);
+    printf("Nombre d'enfants : %d\n", h1->nb_children);
+}
+if (div != NULL) {
+    printf("Tag : %s\n", div->tag);
+    printf("Id : %s\n", div->id);
+    printf("Nombre d'enfants : %d\n", div->nb_children);
+}
+if (p1 != NULL) {
+    printf("Tag : %s\n", p1->tag);
+    printf("Id : %s\n", p1->id);
+    printf("Nombre d'enfants : %d\n", p1->nb_children);
+}
+if (p2 != NULL) {
+    printf("Tag : %s\n", p2->tag);
+    printf("Id : %s\n", p2->id);
+    printf("Nombre d'enfants : %d\n", p2->nb_children);
+}
+
+printf("---------------------------- \n");
+Element* html2 = create_element("html", NULL, NULL);
+Element* body2 = create_element("body", NULL, NULL);
+Element* h1_bis = create_element("h1", "titre", "Mon titre");
+Element* div2 = create_element("div", "test", NULL);
+
+
+append_child(html2, body2);
+append_child(body2, h1_bis);
+append_child(body2, div2);
+
+
+for (int i = 0; i < 20; i++) {
+    Element* p = create_element("p", NULL, "p test");
+
+    if (p == NULL) {
+        return 1;
+    }
+
+    append_child(div2, p);
+    printf("p %d \n", i);
+
+}
+printf("Nombre d'enfants du div : %d\n", div2->nb_children);
+
+printf("---------------------------- \n");
+printf("Nombre d'éléments dans le DOM : %d \n", count_elements(html));
+printf("Nombre d'éléments dans le DOM qui sont de type %s : %d \n", p1->tag ,count_by_tag(html, "p"));
+printf("Nombre d'éléments dans le DOM 2 qui sont de type %s : %d \n", p1->tag ,count_by_tag(html2, "p"));
+printf("Hauteur du DOM : %d \n", dom_height(html));
+
+printf("---------------------------- \n");
+Element* resultFindByID = find_by_id(html, "titre");
+if (resultFindByID != NULL) {
+    printf("L'élément avec l'id titre : %s\n", resultFindByID->tag);
+} else {
+    printf("Élément non trouvé\n");
+}
+Element* resultFindByID2 = find_by_id(html, "cisgood");
+if (resultFindByID2 != NULL) {
+    printf("L'élément avec l'id cisgood : %s\n", resultFindByID2->tag);
+} else {
+    printf("L'élément avec l'id cisgood : Élément non trouvé\n");
+}
+
+printf("---------------------------- \n");
+int depth = depth_of(html, "titre");
+if (depth != -1) {
+    printf("L'élément avec l'id titre a une profondeur de : %d\n", depth);
+}
+
+printf("---------------------------- \n");
+render(html, 0);
+
+printf("---------------------------- \n");
+
+free_element(html);
+free_element(html2);
 
 
 return 0;
