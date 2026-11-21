@@ -3,23 +3,31 @@
 #include "strings.h"
 #include "dom.h"
 
-Element* create_element(const char* tag, const char* id, const char* text) {
-    Element* element = malloc(sizeof(Element));
+#define MIN_CHILDREN 4
 
+Element* create_element(const char* tag, const char* id, const char* text) {
+    
+    if (tag == NULL) {
+        fprintf(stderr, "Failed to create Element : an element must have a tag\n");
+        exit(1);
+    }
+    
+    Element* element = malloc(sizeof(Element));
     if (element == NULL) {
-        return NULL;
+        fprintf(stderr, "Failed to allocate memory for Element\n");
+        exit(1);
     }
 
     element->tag = tag != NULL ? str_dup(tag) : NULL;
     element->id = id != NULL ? str_dup(id) : NULL;
     element->text = text != NULL ? str_dup(text) : NULL;
-    element->capacity= 4;
+    element->capacity= MIN_CHILDREN;
     element->nb_children= 0;
+    
     element->children = malloc(element->capacity * sizeof(Element*));
-
-    if (element->children == NULL)
-    {
-        return NULL;
+    if (element->children == NULL){
+        fprintf(stderr, "Failed to allocate memory for Element's children\n");
+        exit(1);
     }
     
     return element;
@@ -27,10 +35,12 @@ Element* create_element(const char* tag, const char* id, const char* text) {
 
 void append_child(Element* parent, Element* child) {
     if(child == NULL) {
-        return;
+        fprintf(stderr, "Error: child is NULL\n");
+        exit(1);
     }
     if(parent == NULL) {
-        return;
+        fprintf(stderr, "Error: parent is NULL\n");
+        exit(1);
     }
     if (parent->nb_children == parent->capacity)
     {
@@ -38,7 +48,8 @@ void append_child(Element* parent, Element* child) {
         Element** tmpArray = realloc(parent->children, parent->capacity * sizeof(Element*));
         if (tmpArray == NULL)
         {
-            return;
+            fprintf(stderr, "Failed to reallocate memory in tmpArray\n");
+            exit(1);
         }
         parent->children = tmpArray;
     }
@@ -79,9 +90,9 @@ int dom_height(const Element* e) {
     } 
 
     int max_height = 0;
-    int child_height;
+    
     for (int i = 0; i < e->nb_children; i++) {
-        child_height = dom_height(e->children[i]);
+        int child_height = dom_height(e->children[i]);
         if (child_height > max_height) {
             max_height = child_height;
         }
@@ -93,14 +104,13 @@ int dom_height(const Element* e) {
 }
 
 Element* find_by_id(Element* e, const char* id) {
-    Element* goodElement;
 
     if (e->id != NULL && str_equals(e->id, id)) {
         return e;
     }
     
     for (int i = 0; i < e->nb_children; i++) {
-        goodElement = find_by_id(e->children[i], id);
+        Element* goodElement = find_by_id(e->children[i], id);
 
         if (goodElement != NULL) {
             return goodElement;
@@ -116,10 +126,9 @@ int depth_of(const Element* e, const char* id) {
         return 0;
     }
 
-    int child_depth; 
     for (int i = 0; i < e->nb_children; i++) {
-        child_depth = depth_of(e->children[i], id);
-        if (child_depth != -1) {
+        int child_depth = depth_of(e->children[i], id);
+        if (child_depth > -1) {
             return child_depth + 1;
         }
     }
@@ -128,8 +137,8 @@ int depth_of(const Element* e, const char* id) {
 }
 
 void print_indent(int depth) {
-    for (int i = 0; i < depth; i++) {
-        printf("  ");
+    for (int i = 0; i < depth*2; i++) {
+        printf(" ");
     }
 }
 
@@ -140,15 +149,12 @@ void render(const Element* e, int depth) {
      
     print_indent(depth);    
 
-    if (e->id == NULL){
-        printf("%s%s%s\n","<", e->tag, ">");
-    } else {
-        printf("%s%s %s%s%s\n","<", e->tag, "id=\"", e->id, "\">");
-    }  
+    if(e->id!=NULL) printf("<%s id=\"%s\">\n",e->tag, e->id);
+    else printf("<%s>\n",e->tag);
     
-    if(e->text != NULL) {
-        print_indent(depth + 1);
-        printf("%s\n", e->text);
+    if(e->text != NULL){
+        print_indent(depth+1);
+        printf("%s\n",e->text);
     } 
 
     for (int i = 0; i < e->nb_children; i++) {
@@ -156,7 +162,7 @@ void render(const Element* e, int depth) {
     }
     
     print_indent(depth);
-    printf("%s%s%s", "</", e->tag, ">\n");
+    printf("</%s>\n",e->tag);
 }
 
 

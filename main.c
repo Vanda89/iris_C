@@ -4,6 +4,10 @@
 #include "strings.h"
 #include "recursion.h"
 #include "dom.h"
+#include "table.h"
+
+extern int comparisons;
+extern int rotations;
 
 int main(void) {
 
@@ -220,10 +224,142 @@ if (depth != -1) {
 printf("---------------------------- \n");
 render(html, 0);
 
-printf("---------------------------- \n");
-
 free_element(html);
 free_element(html2);
+
+printf("---------------------------- \n");
+Row* root = create_row(at(2, 10, 0), "Réunion d'équipe");
+insert_row(root, at(1, 9, 0) , "Cours de C" );
+insert_row(root, at(4, 14, 0) , "Démo client");
+insert_row(root, at(0, 8, 30), "Café avec Léa");
+insert_row(root, at(1, 14, 0), "TP de C");
+insert_row(root, at(3, 11, 0), "Dentiste");
+insert_row(root, at(4, 18, 0) , "Afterwork");
+insert_row(root, at(1, 12, 0) , "Déjeuner");
+
+insert_row(root, at(1, 9, 0) , "2ème cours de C dans la journée" );
+
+Row* event = select_on_id(root, at(1, 14, 0));
+// event->id = print_time(event->id);
+printf("Evènement a %d nom %s \n", event->id, event->value);
+
+// Row* event2 = select_on_id(root, at(1, 15, 0));
+// printf("Evènement a %d nom %s \n", event2->id, event2->value);
+printf("---------------------------- \n");
+select_order_by(root);
+
+
+printf("---------------------------- \n");
+Row* firstEvent = select_min(root);
+Row* lastEvent = select_max(root);
+print_time(firstEvent->id);
+print_time(lastEvent->id);
+
+printf("---------------------------- \n");
+Row* nextValue = select_next(root, at(3, 9, 0));
+print_time(nextValue->id);
+printf("%s \n", nextValue->value);
+
+Row* nextValue2 = select_next(root, at(1, 9, 0));
+print_time(nextValue2->id);
+printf("%s \n", nextValue2->value);
+
+
+//Row* nextValue3 = select_next(root, at(4, 19, 0));
+//print_time(nextValue3->id);
+//printf("%s \n", nextValue3->value);
+printf("---------------------------- \n");
+
+root = delete_row(root, at(1, 9, 0));
+select_order_by(root);
+insert_row(root, at(1, 9, 0) , "Cours de C" );
+select_order_by(root);
+
+drop_table(root);
+printf("---------------------------- \n");
+
+
+Row* users = NULL;
+
+// 1000 utilisateurs croissants
+
+for (int i = 1; i <= 1000; i++) {
+    users = insert_balanced(users, i, "User");
+}
+
+comparisons = 0;
+Row* user1000 = select_on_id(users, 1000);
+
+printf("User : %d\n", user1000->id);
+printf("Height : %d\n", users->height);
+printf("Comparisons : %d\n", comparisons);
+
+drop_table(users);
+
+// 1000 utilisateurs decroissants
+
+users = NULL;
+
+for (int i = 1000; i >= 1; i--) {
+    users = insert_balanced(users, i, "User");
+}
+
+printf("Height : %d\n", users->height);
+
+drop_table(users);
+
+// Identifiants 1 a 7
+
+users = NULL;
+
+for (int i = 1; i <= 7; i++) {
+    users = insert_balanced(users, i, "User");
+}
+
+printf("Root : %d\n", users->id);
+
+drop_table(users);
+
+// 1, 3, 2
+
+users = NULL;
+users = insert_balanced(users, 1, "User 1");
+users = insert_balanced(users, 3, "User 3");
+users = insert_balanced(users, 2, "User 2");
+
+printf("Root : %d\n", users->id);
+
+drop_table(users);
+
+// 3, 1, 2
+
+users = NULL;
+users = insert_balanced(users, 3, "User 3");
+users = insert_balanced(users, 1, "User 1");
+users = insert_balanced(users, 2, "User 2");
+
+printf("Root : %d\n", users->id);
+
+drop_table(users);
+
+// Agenda
+
+users = NULL;
+
+users = insert_balanced(users, at(2, 10, 0), "Réunion d'équipe");
+users = insert_balanced(users, at(1, 9, 0), "Cours de C");
+users = insert_balanced(users, at(4, 14, 0), "Démo client");
+users = insert_balanced(users, at(0, 8, 30), "Café avec Léa");
+users = insert_balanced(users, at(1, 14, 0), "TP de C");
+users = insert_balanced(users, at(3, 11, 0), "Dentiste");
+users = insert_balanced(users, at(4, 18, 0), "Afterwork");
+users = insert_balanced(users, at(1, 12, 0), "Déjeuner");
+
+select_order_by(users);
+
+drop_table(users);
+users = NULL;
+
 
 
 return 0;
